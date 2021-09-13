@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import lombok.AllArgsConstructor;
 import uk.co.ticklethepanda.spring.auth.jwt.JwtAuthenticationFilter;
 
+
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {

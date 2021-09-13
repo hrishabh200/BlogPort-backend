@@ -17,7 +17,7 @@ import com.example.demo.dto.UserVerification;
 @RequestMapping("/api/auth")
 public class AuthController 
 {
-
+ 
 @Autowired
 AuthService authService;
 @PostMapping("/signup")
