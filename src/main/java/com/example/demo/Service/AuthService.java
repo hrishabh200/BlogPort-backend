@@ -4,7 +4,11 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.memory.UserAttributeEditor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,7 +20,11 @@ import com.example.demo.Entity.VerificationToken;
 import com.example.demo.Exceptions.BlogPortException;
 import com.example.demo.Repository.UserRepo;
 import com.example.demo.Repository.VerificationTokenRepo;
-import com.example.demo.dto.UserVerification;
+import com.example.demo.Security.JwtProvider;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.UserVerification
+;
 
 @Service
 //Auth service is used for creating user object,saving it to database and sending out activation email etc.
@@ -35,6 +43,12 @@ public class AuthService {
 	MailService mailService;
 	@Autowired 
 	PasswordEncoder passwordEncoder;
+	@Autowired
+	AuthenticationManager authenticationManager;
+	@Autowired
+	JwtProvider jwtProvider;
+	@Autowired
+	RefreshTokenService refreshTokenService;
 	@Transactional
 	//Using autowire we use field injection-Spring assigns the dependencies directly to the fields. It is different than Constructor Injection or Setter based Dependency Injection. 
 	//The interesting thing to understand is, Spring injects the dependencies, even if the field is private. 
@@ -80,5 +94,15 @@ public class AuthService {
             user.setEnabled(true);
             userRepo.save(user);
         }
-        
+        public AuthResponse login(LoginRequest loginRequest) {
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                    loginRequest.getPassword()));
+            String token = jwtProvider.generateToken(authenticate);
+            return AuthResponse.builder()
+                    .authenticationToken(token)
+                    .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                    .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                    .username(loginRequest.getUsername())
+                    .build();
+        }
 }

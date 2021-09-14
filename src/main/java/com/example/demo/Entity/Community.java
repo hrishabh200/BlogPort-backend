@@ -25,7 +25,7 @@ public class Community
 {
 @Id
 @GeneratedValue(strategy=GenerationType.IDENTITY)
-private Long subId;
+private Long Id;
 @NotBlank(message="Community name is required")
 private String communityName;
 @NotBlank(message="description is required")

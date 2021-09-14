@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Service.AuthService;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.UserVerification;
 
 @RestController //Rest apis are stateless
@@ -33,6 +35,8 @@ public ResponseEntity<String> verifyAccount(@PathVariable String token)
 	authService.verifyAccount(token);
 	   return new ResponseEntity<>("Account Activated Successfully", HttpStatus.OK);
 }
-
-
+@PostMapping("/login")
+public AuthResponse login(@RequestBody LoginRequest loginRequest) {
+    return authService.login(loginRequest);
+}
 }
